@@ -2,13 +2,14 @@ const express = require("express");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
+const ObjectId = require("mongodb").ObjectId;
 const app = express();
 const port = process.env.PORT || 5000;
 
 //middleware
 
 app.use(cors());
-app.use(express());
+app.use(express.json());
 
 //mongo db connect
 
@@ -18,12 +19,6 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-// client.connect((err) => {
-//   const collection = client.db("foodExpress").collection("users");
-//   console.log("db connect");
-//   // perform actions on the collection object
-//   client.close();
-// });
 
 async function run() {
   try {
@@ -39,7 +34,44 @@ async function run() {
       const products = await cursor.toArray();
       res.send(products);
     });
+    //single product
+    app.get("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await productsCollection.findOne(query);
+      res.send(result);
+    });
+
+    //post api
+    // app.post("/product", async (req, res) => {
+    //   const newQuantity = req.body;
+    //   const result = await productsCollection.insertOne(newQuantity);
+    //   console.log("adding new quinity", result.insertedId);
+    //   res.send(result);
+    // });
+
+    // update quantity
+    app.put("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateQuantity = req.body;
+
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          quantity: updateQuantity.quantity,
+        },
+      };
+      const result = await productsCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
   } finally {
+    // await client.close();
   }
 }
 run().catch(console.dir);
