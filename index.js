@@ -44,12 +44,12 @@ async function run() {
     });
 
     //post api
-    // app.post("/product", async (req, res) => {
-    //   const newQuantity = req.body;
-    //   const result = await productsCollection.insertOne(newQuantity);
-    //   console.log("adding new quinity", result.insertedId);
-    //   res.send(result);
-    // });
+    app.post("/product", async (req, res) => {
+      const item = req.body;
+      const result = await productsCollection.insertOne(item);
+      console.log("adding new quinity", result.insertedId);
+      res.send(result);
+    });
 
     // update quantity
     app.put("/product/:id", async (req, res) => {
