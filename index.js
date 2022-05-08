@@ -88,5 +88,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log("Serer is running ", port);
+  console.log("Serer is running update ", port);
 });
